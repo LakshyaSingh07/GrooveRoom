@@ -35,7 +35,7 @@ GrooveRoom Music and Chat leverages a robust technology stack to deliver real-ti
 
 For questions or suggestions, please reach out:
 
-- Name: Rishabh Singh Rajput
-- Email: [rishabhsinghrajput081@gmail.com](mailto:rishabhsinghrajput081@gmail.com)
+- Name: Lakshya Singh
+- Email: [lakshyac99@gmail.com](mailto:lakshyac99@gmail.com)
 
 
