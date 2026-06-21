@@ -11,6 +11,29 @@ export const getAllSongs = async (req, res, next) => {
 	}
 };
 
+export const searchSongs = async (req, res, next) => {
+	try {
+		const { q } = req.query;
+
+		if (!q || !q.trim()) {
+			return res.json([]);
+		}
+
+		// escape regex special chars so user input can't break/abuse the query
+		const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+		const regex = new RegExp(escaped, "i");
+
+		// search across the entire song library (title or artist), newest first
+		const songs = await Song.find({
+			$or: [{ title: regex }, { artist: regex }],
+		}).sort({ createdAt: -1 });
+
+		res.json(songs);
+	} catch (error) {
+		next(error);
+	}
+};
+
 export const getFeaturedSongs = async (req, res, next) => {
 	try {
 		// fetch 6 random songs using mongodb's aggregation pipeline

@@ -13,6 +13,9 @@ interface MusicStore {
 	madeForYouSongs: Song[];
 	trendingSongs: Song[];
 	stats: Stats;
+	searchResults: Song[];
+	searchQuery: string;
+	isSearching: boolean;
 
 	fetchAlbums: () => Promise<void>;
 	fetchAlbumById: (id: string) => Promise<void>;
@@ -23,6 +26,8 @@ interface MusicStore {
 	fetchSongs: () => Promise<void>;
 	deleteSong: (id: string) => Promise<void>;
 	deleteAlbum: (id: string) => Promise<void>;
+	searchSongs: (query: string) => Promise<void>;
+	clearSearch: () => void;
 }
 
 export const useMusicStore = create<MusicStore>((set) => ({
@@ -34,12 +39,38 @@ export const useMusicStore = create<MusicStore>((set) => ({
 	madeForYouSongs: [],
 	featuredSongs: [],
 	trendingSongs: [],
+	searchResults: [],
+	searchQuery: "",
+	isSearching: false,
 	stats: {
 		totalSongs: 0,
 		totalAlbums: 0,
 		totalUsers: 0,
 		totalArtists: 0,
 	},
+
+	searchSongs: async (query) => {
+		const trimmed = query.trim();
+		set({ searchQuery: query });
+
+		// empty query => clear results, no request
+		if (!trimmed) {
+			set({ searchResults: [], isSearching: false });
+			return;
+		}
+
+		set({ isSearching: true, error: null });
+		try {
+			const response = await axiosInstance.get("/songs/search", { params: { q: trimmed } });
+			set({ searchResults: response.data });
+		} catch (error: any) {
+			set({ error: error?.response?.data?.message || error.message, searchResults: [] });
+		} finally {
+			set({ isSearching: false });
+		}
+	},
+
+	clearSearch: () => set({ searchResults: [], searchQuery: "", isSearching: false }),
 
 	deleteSong: async (id) => {
 		set({ isLoading: true, error: null });

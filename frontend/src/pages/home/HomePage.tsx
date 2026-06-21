@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import FeaturedSection from "./components/FeaturedSection";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SectionGrid from "./components/SectionGrid";
+import SearchBar from "./components/SearchBar";
+import SearchResults from "./components/SearchResults";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 
 const HomePage = () => {
@@ -15,9 +17,13 @@ const HomePage = () => {
 		madeForYouSongs,
 		featuredSongs,
 		trendingSongs,
+		searchQuery,
+		searchResults,
 	} = useMusicStore();
 
 	const { initializeQueue } = usePlayerStore();
+
+	const isSearchActive = searchQuery.trim().length > 0;
 
 	useEffect(() => {
 		fetchFeaturedSongs();
@@ -27,10 +33,11 @@ const HomePage = () => {
 
 	useEffect(() => {
 		if (madeForYouSongs.length > 0 && featuredSongs.length > 0 && trendingSongs.length > 0) {
-			const allSongs = [...featuredSongs, ...madeForYouSongs, ...trendingSongs];
+			// include search results so songs played from search are part of the queue
+			const allSongs = [...featuredSongs, ...madeForYouSongs, ...trendingSongs, ...searchResults];
 			initializeQueue(allSongs);
 		}
-	}, [initializeQueue, madeForYouSongs, trendingSongs, featuredSongs]);
+	}, [initializeQueue, madeForYouSongs, trendingSongs, featuredSongs, searchResults]);
 
 	return (
 		<main className='rounded-md overflow-hidden h-full bg-gradient-to-b from-zinc-800 to-zinc-900'>
@@ -38,12 +45,21 @@ const HomePage = () => {
 			<ScrollArea className='h-[calc(100vh-180px)]'>
 				<div className='p-4 sm:p-6'>
 					<h1 className='text-2xl sm:text-3xl font-bold mb-6'>Groove Essentials</h1>
-					<FeaturedSection />
 
-					<div className='space-y-8'>
-						<SectionGrid title='Made For You' songs={madeForYouSongs} isLoading={isLoading} />
-						<SectionGrid title='Trending' songs={trendingSongs} isLoading={isLoading} />
-					</div>
+					<SearchBar />
+
+					{isSearchActive ? (
+						<SearchResults />
+					) : (
+						<>
+							<FeaturedSection />
+
+							<div className='space-y-8'>
+								<SectionGrid title='Made For You' songs={madeForYouSongs} isLoading={isLoading} />
+								<SectionGrid title='Trending' songs={trendingSongs} isLoading={isLoading} />
+							</div>
+						</>
+					)}
 				</div>
 			</ScrollArea>
 		</main>
