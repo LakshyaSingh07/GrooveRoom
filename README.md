@@ -1,4 +1,4 @@
-# Check out the live site here [GrooveRoom](https://grooveroom.onrender.com/).
+# Check out the live site here [GrooveRoom](https://grooveroom.lakshyasingh.com/).
 
 # GrooveRoom Music and Chat
 
