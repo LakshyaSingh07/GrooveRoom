@@ -22,7 +22,9 @@ interface ChatStore {
 	setSelectedUser: (user: User | null) => void;
 }
 
-const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+// Socket.io connects to the backend origin. In production set VITE_API_URL in
+// the Vercel dashboard to the Render backend URL; falls back to local dev.
+const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const socket = io(baseURL, {
 	autoConnect: false, // only connect if user is authenticated

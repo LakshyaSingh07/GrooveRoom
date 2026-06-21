@@ -22,14 +22,15 @@ dotenv.config();
 
 const __dirname = path.resolve();
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
 
 app.use(
 	cors({
-		origin: "http://localhost:3000",
+		origin: CLIENT_URL,
 		credentials: true,
 	})
 );
@@ -63,19 +64,17 @@ cron.schedule("0 * * * *", () => {
 	}
 });
 
+// simple health-check / root route (used by Render and for quick checks)
+app.get("/", (req, res) => {
+	res.status(200).json({ status: "ok", message: "GrooveRoom API is running" });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/songs", songRoutes);
 app.use("/api/albums", albumRoutes);
 app.use("/api/stats", statRoutes);
-
-if (process.env.NODE_ENV === "production") {
-	app.use(express.static(path.join(__dirname, "../frontend/dist")));
-	app.get("*", (req, res) => {
-		res.sendFile(path.resolve(__dirname, "../frontend", "dist", "index.html"));
-	});
-}
 
 // error handler
 app.use((err, req, res, next) => {
