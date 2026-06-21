@@ -58,6 +58,10 @@ export const deleteSong = async (req, res, next) => {
 
 		const song = await Song.findById(id);
 
+		if (!song) {
+			return res.status(404).json({ message: "Song not found" });
+		}
+
 		// if song belongs to an album, update the album's songs array
 		if (song.albumId) {
 			await Album.findByIdAndUpdate(song.albumId, {
@@ -76,6 +80,10 @@ export const deleteSong = async (req, res, next) => {
 
 export const createAlbum = async (req, res, next) => {
 	try {
+		if (!req.files || !req.files.imageFile) {
+			return res.status(400).json({ message: "Please upload image file" });
+		}
+
 		const { title, artist, releaseYear } = req.body;
 		const { imageFile } = req.files;
 

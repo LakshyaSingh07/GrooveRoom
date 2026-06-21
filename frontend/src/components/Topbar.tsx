@@ -8,7 +8,6 @@ import { buttonVariants } from "./ui/button";
 
 const Topbar = () => {
 	const { isAdmin } = useAuthStore();
-	console.log({ isAdmin });
 
 	return (
 		<div
